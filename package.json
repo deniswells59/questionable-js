@@ -1,0 +1,37 @@
+{
+  "name": "questionable-js",
+  "version": "1.0.0",
+  "description": "An open-sourced joke that's gone too far",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/babel src --out-dir lib",
+    "watch": "watch 'yarn build' ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deniswells59/questionable-js.git"
+  },
+  "keywords": [
+    "dumb"
+  ],
+  "author": "Denis Wells",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deniswells59/questionable-js/issues"
+  },
+  "homepage": "https://github.com/deniswells59/questionable-js#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "watch": "^1.0.2",
+    "webpack": "^4.35.0"
+  },
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  }
+}
