@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { PropInputWrapper, CodeInput } from './Wrappers';
+import { PropInputWrapper } from './Wrappers';
+import CodeInput from './CodeInput';
 
 import getTabByNestedLevel from '../../utils/getTabByNestedLevel';
 

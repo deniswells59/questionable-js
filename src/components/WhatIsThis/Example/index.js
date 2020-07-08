@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 
 import ObjectProp from './partials/ObjectProp';
 import ArrayProp from './partials/ArrayProp';
+import SimpleProp from './partials/SimpleProp';
 
 import getTabByNestedLevel from '../utils/getTabByNestedLevel';
 import { bracketWrapper, quoteWrapper } from '../utils/contentWrappers';
@@ -24,9 +25,14 @@ const Example = ({ subject, exampleChildren, exampleProps }) => {
       // Direct prop-types require different views and change handlers
       const getPropConfiguration = () => {
         if (Array.isArray(propValue)) {
+          // console.log('ARRAY');
           return [ArrayProp, onArrayChange, bracketWrapper];
         } else if (typeof propValue === 'object') {
+          // console.log('OBJECT');
           return [ObjectProp, onObjectChange, bracketWrapper];
+        } else if (typeof propValue === 'boolean') {
+          // console.log('BOOLEAN');
+          return [SimpleProp, onBooleanChange, bracketWrapper];
         }
       };
 
@@ -64,6 +70,16 @@ const Example = ({ subject, exampleChildren, exampleProps }) => {
     newArr[index] = newValue;
 
     setPropsUsedByExample({ ...propsUsedByExample, [propname]: newArr });
+  };
+
+  const onBooleanChange = ({ target }) => {
+    const { propname } = target.dataset;
+    const newValue = target.textContent;
+
+    setPropsUsedByExample({
+      ...propsUsedByExample,
+      [propname]: newValue === 'true' ? true : false,
+    });
   };
 
   return (
