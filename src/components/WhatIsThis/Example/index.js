@@ -1,56 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 
-import stringifyPropValue from '../../../utils/stringifyProp';
+import ObjectProp from './partials/ObjectProp';
+import ArrayProp from './partials/ArrayProp';
+
+import getTabByNestedLevel from '../utils/getTabByNestedLevel';
+import { bracketWrapper, quoteWrapper } from '../utils/contentWrappers';
 
 const Example = ({ subject, exampleChildren, exampleProps }) => {
-  const [props, setProps] = useState(exampleProps);
+  const [propsUsedByExample, setPropsUsedByExample] = useState(exampleProps);
+
+  // Rename so it looks like a React component
   const Subject = subject;
 
   const displayActiveProps = () => {
-    // Reduces each React prop into one string
-    // Uses `stringifyProp` to handle prop values
+    // Creates prefix of prop with proper tabs
+    // Ex. `   propName=`
+    const propStringPrefix = (key) => `\n${getTabByNestedLevel(1)}${key}=`;
 
-    const propsAsInputs = Object.keys(props).map((key) => {
+    // Maps through actively used props
+    const propsAsInputs = Object.keys(propsUsedByExample).map((key) => {
+      const propValue = propsUsedByExample[key];
+
+      // Direct prop-types require different views and change handlers
+      const getPropConfiguration = () => {
+        if (Array.isArray(propValue)) {
+          return [ArrayProp, onArrayChange, bracketWrapper];
+        } else if (typeof propValue === 'object') {
+          return [ObjectProp, onObjectChange, bracketWrapper];
+        }
+      };
+
+      const [PropComponent, handler, contentWrapper] = getPropConfiguration();
+
       return (
-        <>
-          {`  ${key}=`}
-          {stringifyPropValue({ propName: key, value: props[key], handler: onPropsChange })}
-        </>
+        <Fragment key={key}>
+          {propStringPrefix(key)}
+          {contentWrapper(<PropComponent propName={key} value={propValue} handler={handler} />)}
+        </Fragment>
       );
     });
 
-    return propsAsInputs[0];
-    // return Object.keys(props).reduce((acc, propName) => {
-    //   return `${acc}   ${propName}={${stringifyProp(props[propName])}}\n`;
-    // }, '');
+    return propsAsInputs;
   };
 
-  const onPropsChange = ({ target }) => {
+  const onObjectChange = ({ target }) => {
     const { propname, objectkey } = target.dataset;
-    const currentProp = props[propname];
+    const currentProp = propsUsedByExample[propname];
 
     const newProp = {
       ...currentProp,
       [objectkey]: target.textContent,
     };
 
-    console.log('newProp:', newProp);
-
-    setProps({ [propname]: newProp });
+    setPropsUsedByExample({ ...propsUsedByExample, [propname]: newProp });
   };
 
-  useEffect(() => {
-    console.log('CHANGED!', props);
-  }, [props]);
+  const onArrayChange = ({ target }) => {
+    const { propname, index } = target.dataset;
+    const currentProp = propsUsedByExample[propname];
+
+    const newValue = target.textContent;
+    const newArr = currentProp.slice(0);
+    newArr[index] = newValue;
+
+    setPropsUsedByExample({ ...propsUsedByExample, [propname]: newArr });
+  };
 
   return (
     <>
       <pre>
         <code>
-          {`<${subject.displayName}\n`} {displayActiveProps()} {`\n/>`}
+          {`<${subject.displayName}`} {displayActiveProps()} {`\n/>`}
         </code>
       </pre>
-      <Subject {...props}>{exampleChildren}</Subject>
+      <Subject {...propsUsedByExample}>{exampleChildren}</Subject>
     </>
   );
 };
