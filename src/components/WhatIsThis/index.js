@@ -5,17 +5,11 @@ import PropDetails from './PropDetails';
 
 import Wrapper from './partials/Wrapper';
 import Title from './partials/Title';
+import Example from './Example';
 
-const WhatIsThis = ({ subject }) => {
-  const getDefaultFromProp = (defaultProp) => {
-    switch (typeof defaultProp) {
-      case 'object':
-        return JSON.stringify(defaultProp, null, 2);
-      default:
-        return defaultProp.toString();
-    }
-  };
+import stringifyProp from '../../utils/stringifyProp';
 
+const WhatIsThis = ({ subject, exampleProps, exampleChildren }) => {
   const getTypeFromProp = (defaultProp) =>
     Array.isArray(defaultProp) ? 'array' : typeof defaultProp;
 
@@ -24,7 +18,7 @@ const WhatIsThis = ({ subject }) => {
       <PropDetails
         key={prop}
         propName={prop}
-        defaultProp={getDefaultFromProp(defaultProps[prop])}
+        defaultProp={stringifyProp(defaultProps[prop])}
         propType={getTypeFromProp(defaultProps[prop])}
       />
     ));
@@ -33,6 +27,7 @@ const WhatIsThis = ({ subject }) => {
     <Wrapper>
       <Title>{subject.displayName}</Title>
       {renderPropDetails(subject)}
+      <Example subject={subject} exampleChildren={exampleChildren} exampleProps={exampleProps} />
     </Wrapper>
   );
 };
@@ -43,6 +38,8 @@ WhatIsThis.defaultProps = {
 
 WhatIsThis.propTypes = {
   subject: PropTypes.func.isRequired,
+  exampleProps: PropTypes.object,
+  exampleChildren: PropTypes.string,
 };
 
 WhatIsThis.displayName = 'WhatIsThis';
