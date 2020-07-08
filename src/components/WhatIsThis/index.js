@@ -22,6 +22,7 @@ const WhatIsThis = ({ subject }) => {
   const renderPropDetails = ({ defaultProps }) =>
     Object.keys(defaultProps).map((prop) => (
       <PropDetails
+        key={prop}
         propName={prop}
         defaultProp={getDefaultFromProp(defaultProps[prop])}
         propType={getTypeFromProp(defaultProps[prop])}
@@ -37,11 +38,11 @@ const WhatIsThis = ({ subject }) => {
 };
 
 WhatIsThis.defaultProps = {
-  subject: null,
+  subject: () => {},
 };
 
 WhatIsThis.propTypes = {
-  subject: PropTypes.node,
+  subject: PropTypes.func.isRequired,
 };
 
 WhatIsThis.displayName = 'WhatIsThis';

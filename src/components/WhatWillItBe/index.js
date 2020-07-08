@@ -19,13 +19,15 @@ const defaultPossibilities = [
   'datalist',
 ];
 
-const WhatWillItBe = ({ optionsList, includeDefault, styles, children }) => {
-  const [chosenOne, setChosenOne] = useState('');
+const WhatWillItBe = ({ options, excludeDefaultOptions, styles, children }) => {
+  const [ChosenOne, setChosenOne] = useState('div');
   const [allPossibiliites, setAllPossibilities] = useState(defaultPossibilities);
 
   useEffect(() => {
-    setAllPossibilities([includeDefault ?? [...defaultPossibilities], ...optionsList]);
-  }, [optionsList]);
+    const defaultEls = excludeDefaultOptions ? [] : defaultPossibilities;
+
+    setAllPossibilities([...defaultEls, ...options]);
+  }, [options]);
 
   useEffect(() => {
     const randomElement = getElement();
@@ -33,42 +35,29 @@ const WhatWillItBe = ({ optionsList, includeDefault, styles, children }) => {
     setChosenOne(randomElement);
   }, [allPossibiliites]);
 
-  // async componentWillMount() {
-  //   await this.setPossibilities();
-  //   const randElIndex = this.getIndex();
-  //   const randomEl = this.getElement(randElIndex);
-
-  //   this.setState({ chosenOne: randomEl });
-  // }
-
   const getElement = () => {
     const randomIndex = Math.floor(Math.random() * allPossibiliites.length);
 
     return allPossibiliites[randomIndex];
   };
 
-  const ChosenOne = chosenOne || 'div';
-
   return (
-    <div>
-      <ChosenOne style={styles}>
-        {children}
-        <p>YO</p>
-      </ChosenOne>
-    </div>
+    <>
+      <ChosenOne style={styles}>{children}</ChosenOne>
+    </>
   );
 };
 
 WhatWillItBe.defaultProps = {
   styles: {},
-  optionsList: [],
-  includeDefault: false,
+  options: [],
+  excludeDefaultOptions: false,
 };
 
 WhatWillItBe.propTypes = {
   styles: PropTypes.object,
-  optionsList: PropTypes.arrayOf(PropTypes.node),
-  includeDefault: PropTypes.bool,
+  options: PropTypes.arrayOf(PropTypes.node),
+  excludeDefaultOptions: PropTypes.bool,
 };
 
 WhatWillItBe.displayName = 'WhatWillItBe';
