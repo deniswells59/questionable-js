@@ -1,79 +1,76 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-class WhatWillItBe extends Component {
-  state = {
-    chosenOne: null,
-    possibilities: [],
+const defaultPossibilities = [
+  'h1',
+  'p',
+  'div',
+  'aside',
+  'footer',
+  'blockquote',
+  'del',
+  'time',
+  'mark',
+  'button',
+  'small',
+  'q',
+  'ins',
+  'select',
+  'datalist',
+];
+
+const WhatWillItBe = ({ optionsList, includeDefault, styles, children }) => {
+  const [chosenOne, setChosenOne] = useState('');
+  const [allPossibiliites, setAllPossibilities] = useState(defaultPossibilities);
+
+  useEffect(() => {
+    setAllPossibilities([includeDefault ?? [...defaultPossibilities], ...optionsList]);
+  }, [optionsList]);
+
+  useEffect(() => {
+    const randomElement = getElement();
+
+    setChosenOne(randomElement);
+  }, [allPossibiliites]);
+
+  // async componentWillMount() {
+  //   await this.setPossibilities();
+  //   const randElIndex = this.getIndex();
+  //   const randomEl = this.getElement(randElIndex);
+
+  //   this.setState({ chosenOne: randomEl });
+  // }
+
+  const getElement = () => {
+    const randomIndex = Math.floor(Math.random() * allPossibiliites.length);
+
+    return allPossibiliites[randomIndex];
   };
 
-  defaultPossibilities = [
-    'h1',
-    'p',
-    'div',
-    'aside',
-    'footer',
-    'blockquote',
-    'del',
-    'time',
-    'mark',
-    'button',
-    'small',
-    'q',
-    'ins',
-    'select',
-    'datalist',
-  ];
+  const ChosenOne = chosenOne || 'div';
 
-  async componentWillMount() {
-    await this.setPossibilities();
-    const randElIndex = this.getIndex();
-    const randomEl = this.getElement(randElIndex);
-
-    this.setState({ chosenOne: randomEl });
-  }
-
-  setPossibilities = () => {
-    return new Promise(resolve => {
-      const { defaultPossibilities } = this;
-      const { optionsList, includeDefault } = this.props;
-
-      const customOptions = includeDefault
-        ? [...defaultPossibilities, ...optionsList]
-        : optionsList;
-      const possibilities = customOptions.length > 0 ? customOptions : defaultPossibilities;
-
-      this.setState({ possibilities }, resolve);
-    });
-  };
-
-  getIndex = () => {
-    const { possibilities } = this.state;
-    return Math.floor(Math.random() * possibilities.length);
-  };
-
-  getElement = index => {
-    const { possibilities } = this.state;
-    return possibilities[index];
-  };
-
-  render() {
-    const { chosenOne } = this.state;
-    const { styles, children } = this.props;
-
-    const ChosenOne = chosenOne || 'div';
-
-    return (
-      <div>
-        <ChosenOne style={styles}>{children}</ChosenOne>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <ChosenOne style={styles}>
+        {children}
+        <p>YO</p>
+      </ChosenOne>
+    </div>
+  );
+};
 
 WhatWillItBe.defaultProps = {
   styles: {},
   optionsList: [],
   includeDefault: false,
 };
+
+WhatWillItBe.propTypes = {
+  styles: PropTypes.object,
+  optionsList: PropTypes.arrayOf(PropTypes.node),
+  includeDefault: PropTypes.bool,
+};
+
+WhatWillItBe.displayName = 'WhatWillItBe';
 
 export default WhatWillItBe;
