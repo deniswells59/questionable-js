@@ -2,36 +2,39 @@ import React from 'react';
 
 import { PropInputWrapper } from './Wrappers';
 import CodeInput from './CodeInput';
+import { PunctuationWrapper, StringWrapper, QuoteWrapper } from './CodeStyles';
 
 import getTabByNestedLevel from '../../utils/getTabByNestedLevel';
 
 const ArrayProp = ({ value, propName, handler }) => {
-  const prefix = '[\n';
-  const suffix = `${getTabByNestedLevel(1)}]`;
+  const Prefix = () => <PunctuationWrapper>{'[\n'}</PunctuationWrapper>;
+  const Suffix = () => <PunctuationWrapper>{`${getTabByNestedLevel(1)}]`}</PunctuationWrapper>;
 
   const arrayInputs = value.map((arrayItemValue, index) => {
     return (
       <PropInputWrapper key={`${arrayItemValue}-${index}`}>
         <span>{`${getTabByNestedLevel(2)}`}</span>
-        <CodeInput
-          contentEditable
-          role="textbox"
-          data-index={index}
-          data-propname={propName}
-          onBlur={handler}
-        >
-          {arrayItemValue}
-        </CodeInput>
-        {`,\n`}
+        <QuoteWrapper>
+          <CodeInput
+            contentEditable
+            role="textbox"
+            data-index={index}
+            data-propname={propName}
+            onBlur={handler}
+          >
+            <StringWrapper>{arrayItemValue}</StringWrapper>
+          </CodeInput>
+        </QuoteWrapper>
+        <PunctuationWrapper>{`,\n`}</PunctuationWrapper>
       </PropInputWrapper>
     );
   });
 
   return (
     <>
-      {prefix}
+      <Prefix />
       {arrayInputs}
-      {suffix}
+      <Suffix />
     </>
   );
 };

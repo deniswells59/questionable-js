@@ -1,11 +1,13 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react';
 
 import ObjectProp from './partials/ObjectProp';
 import ArrayProp from './partials/ArrayProp';
 import SimpleProp from './partials/SimpleProp';
 
-import getTabByNestedLevel from '../utils/getTabByNestedLevel';
-import { bracketWrapper, quoteWrapper } from '../utils/contentWrappers';
+import { FullWrapper, ExampleWrapper, CodeWrapper } from './partials/Wrappers';
+import { ComponentUI, PropUI, BracketWrapper } from './partials/CodeStyles';
+
+import { bracketWrapper } from '../utils/contentWrappers';
 
 const Example = ({ subject, exampleChildren, exampleProps }) => {
   const [propsUsedByExample, setPropsUsedByExample] = useState(exampleProps);
@@ -14,10 +16,6 @@ const Example = ({ subject, exampleChildren, exampleProps }) => {
   const Subject = subject;
 
   const displayActiveProps = () => {
-    // Creates prefix of prop with proper tabs
-    // Ex. `   propName=`
-    const propStringPrefix = (key) => `\n${getTabByNestedLevel(1)}${key}=`;
-
     // Maps through actively used props
     const propsAsInputs = Object.keys(propsUsedByExample).map((key) => {
       const propValue = propsUsedByExample[key];
@@ -26,22 +24,24 @@ const Example = ({ subject, exampleChildren, exampleProps }) => {
       const getPropConfiguration = () => {
         if (Array.isArray(propValue)) {
           // console.log('ARRAY');
-          return [ArrayProp, onArrayChange, bracketWrapper];
+          return [ArrayProp, onArrayChange, BracketWrapper];
         } else if (typeof propValue === 'object') {
           // console.log('OBJECT');
-          return [ObjectProp, onObjectChange, bracketWrapper];
+          return [ObjectProp, onObjectChange, BracketWrapper];
         } else if (typeof propValue === 'boolean') {
           // console.log('BOOLEAN');
-          return [SimpleProp, onBooleanChange, bracketWrapper];
+          return [SimpleProp, onBooleanChange, BracketWrapper];
         }
       };
 
-      const [PropComponent, handler, contentWrapper] = getPropConfiguration();
+      const [PropComponent, handler, ContentWrapper] = getPropConfiguration();
 
       return (
         <Fragment key={key}>
-          {propStringPrefix(key)}
-          {contentWrapper(<PropComponent propName={key} value={propValue} handler={handler} />)}
+          <PropUI propName={key} />
+          <ContentWrapper>
+            <PropComponent propName={key} value={propValue} handler={handler} />
+          </ContentWrapper>
         </Fragment>
       );
     });
@@ -83,14 +83,19 @@ const Example = ({ subject, exampleChildren, exampleProps }) => {
   };
 
   return (
-    <>
-      <pre>
-        <code>
-          {`<${subject.displayName}`} {displayActiveProps()} {`\n/>`}
-        </code>
-      </pre>
-      <Subject {...propsUsedByExample}>{exampleChildren}</Subject>
-    </>
+    <FullWrapper>
+      <ExampleWrapper>
+        <Subject {...propsUsedByExample}>{exampleChildren}</Subject>
+      </ExampleWrapper>
+
+      <CodeWrapper>
+        <pre>
+          <code>
+            <ComponentUI displayName={subject.displayName}>{displayActiveProps()}</ComponentUI>
+          </code>
+        </pre>
+      </CodeWrapper>
+    </FullWrapper>
   );
 };
 
