@@ -7,27 +7,12 @@ import Wrapper from './partials/Wrapper';
 import Title from './partials/Title';
 import Example from './Example';
 
-import stringifyProp from '../../utils/stringifyProp';
-
 const WhatIsThis = ({ subject, exampleProps, exampleChildren }) => {
-  const getTypeFromProp = (defaultProp) =>
-    Array.isArray(defaultProp) ? 'array' : typeof defaultProp;
-
-  const renderPropDetails = ({ defaultProps }) =>
-    Object.keys(defaultProps).map((prop) => (
-      <PropDetails
-        key={prop}
-        propName={prop}
-        defaultProp={stringifyProp(defaultProps[prop])}
-        propType={getTypeFromProp(defaultProps[prop])}
-      />
-    ));
-
   return (
     <Wrapper>
       <Title>{subject.displayName}</Title>
-      {renderPropDetails(subject)}
       <Example subject={subject} exampleChildren={exampleChildren} exampleProps={exampleProps} />
+      <PropDetails defaultProps={subject.defaultProps} />
     </Wrapper>
   );
 };
